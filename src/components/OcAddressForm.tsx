@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import OcForm from "../shared/OcForm";
+import OcForm, { OcFormProps } from "../shared/OcForm";
 import { Address, Addresses } from "ordercloud-javascript-sdk";
+import { merge } from "lodash";
 import OC_ADDRESS_FORM_CONFIG from "../constants/OcAddressFormConfig";
 
-const OcAddressForm: React.FC = () => {
+const OcAddressForm: React.FC<Partial<OcFormProps<Address>>> = props => {
+  const { width, title, onSubmit, config } = props;
   const handleSubmit = (address: Partial<Address>) => {
     if (process.env.REACT_APP_BUYER_ID) {
       return Addresses.Create(process.env.REACT_APP_BUYER_ID, address).catch(
@@ -14,10 +16,10 @@ const OcAddressForm: React.FC = () => {
   };
   return (
     <OcForm<Address>
-      width={450}
-      title="Address"
-      onSubmit={handleSubmit}
-      config={OC_ADDRESS_FORM_CONFIG}
+      width={width || 450}
+      title={title || "Address"}
+      onSubmit={onSubmit || handleSubmit}
+      config={merge({}, OC_ADDRESS_FORM_CONFIG, config)}
     />
   );
 };

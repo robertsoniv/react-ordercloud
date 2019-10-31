@@ -3,11 +3,19 @@ import { map, mapValues } from "lodash";
 import Case from "case";
 import PhoneNumberTextMask from "./PhoneNumberTextMask";
 
+export interface OcOptionObject {
+  label?: string;
+  value: any;
+}
+
+export type OcFieldOption = OcOptionObject | string | number;
+
 export interface OcFieldConfig extends React.InputHTMLAttributes<any> {
   label?: string;
   helpText?: string;
   confirm?: boolean;
   multiline?: boolean;
+  options?: OcFieldOption[];
   adorn?: {
     left?: string;
     right?: string;
@@ -18,7 +26,7 @@ export type OcFormConfig<OcPartialModel> = {
   [P in keyof OcPartialModel]: OcFieldConfig;
 };
 
-interface OcFormProps<OcModel> {
+export interface OcFormProps<OcModel> {
   data?: Partial<OcModel>;
   onSubmit: (data: Partial<OcModel>) => Promise<OcModel>;
   config: OcFormConfig<Partial<OcModel>>;
@@ -41,7 +49,10 @@ class OcForm<OcModel> extends React.Component<
     this.state = {
       error: null,
       loading: false,
-      fields: { ...mapValues(props.config, i => i.value as any), ...props.data }
+      fields: {
+        ...mapValues(props.config, i => i && (i.value as any)),
+        ...props.data
+      }
     };
   }
 
@@ -49,7 +60,7 @@ class OcForm<OcModel> extends React.Component<
     if (!prevProps.data && this.props.data) {
       this.setState({
         fields: {
-          ...mapValues(this.props.config, i => i.value as any),
+          ...mapValues(this.props.config, i => i && (i.value as any)),
           ...this.props.data
         }
       });
@@ -57,7 +68,9 @@ class OcForm<OcModel> extends React.Component<
   };
 
   public handleInputChange = (field: keyof OcModel) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const val = e.target.value;
     this.setState(state => ({
@@ -71,7 +84,7 @@ class OcForm<OcModel> extends React.Component<
     this.setState({
       error: null,
       fields: {
-        ...mapValues(this.props.config, i => i.value as any),
+        ...mapValues(this.props.config, i => i && (i.value as any)),
         ...this.props.data
       }
     });
@@ -86,7 +99,7 @@ class OcForm<OcModel> extends React.Component<
         alert(JSON.stringify(newItem, null, 2));
         this.setState({
           fields: {
-            ...mapValues(this.props.config, i => i.value as any),
+            ...mapValues(this.props.config, i => i && (i.value as any)),
             ...this.props.data
           }
         });
@@ -101,184 +114,50 @@ class OcForm<OcModel> extends React.Component<
       });
   };
 
-  get inputStyle(): CSSProperties {
-    return {
-      display: "block",
-      width: "100%",
-      padding: 12,
-      marginBottom: 8,
-      minWidth: 90,
-      borderStyle: "solid",
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 4,
-      background: "#ddd"
-    };
-  }
-
-  get textAreaStyle(): CSSProperties {
-    return {
-      height: 125,
-      resize: "vertical"
-    };
-  }
-
-  get labelStyle(): CSSProperties {
-    return {
-      display: "block",
-      fontWeight: "bold",
-      fontSize: "0.8rem",
-      margin: "2px 2px 4px"
-    };
-  }
-
-  get formStyle(): CSSProperties {
-    const { width } = this.props;
-    return {
-      width,
-      backgroundColor: "#fff",
-      boxShadow: "0 8px 18px 0px rgba(0,0,0,0.4)",
-      padding: "1px 16px 16px",
-      margin: "0 auto",
-      borderRadius: 8
-    };
-  }
-
-  get fieldsetStyle(): CSSProperties {
-    return {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "wrap",
-      margin: "0 -6px"
-    };
-  }
-
-  get buttonStyle(): CSSProperties {
-    return {
-      flexGrow: 0,
-      flexShrink: 0,
-      cursor: "pointer",
-      padding: "10px 12px",
-      background: "#ccc",
-      borderStyle: "solid",
-      borderColor: "#aaa",
-      borderWidth: 0,
-      borderRadius: 4,
-      fontFamily: "roboto",
-      textTransform: "uppercase"
-    };
-  }
-
-  get submitStyle(): CSSProperties {
-    return {
-      margin: "0 0 0 8px",
-      background: "teal",
-      color: "white",
-      borderColor: "teal"
-    };
-  }
-
-  get errorStyle(): CSSProperties {
-    return {
-      flexGrow: 1,
-      flexShrink: 1,
-      color: "red",
-      display: "inline-block",
-      fontSize: "0.8rem",
-      margin: "0 8px 0 0"
-    };
-  }
-
-  get controlStyle(): CSSProperties {
-    return {
-      margin: "0 6px",
-      flexGrow: 0,
-      flexShrink: 0,
-      flexBasis: "calc(100% - 12px)"
-    };
-  }
-
-  get helpTextStyle(): CSSProperties {
-    return {
-      fontSize: "0.7rem",
-      color: "#888",
-      margin: "-4px 2px 10px"
-    };
-  }
-
-  get buttonContainerStyle(): CSSProperties {
-    return {
-      borderTop: "1px solid #ddd",
-      margin: "4px -16px 0",
-      padding: "12px 16px 0",
-      display: "flex",
-      flexDirection: "row-reverse",
-      flexWrap: "nowrap",
-      alignItems: "center",
-      flexBasis: "100%"
-    };
-  }
-
-  get adornLeftStyle(): CSSProperties {
-    return {
-      color: "#777",
-      fontWeight: "bold",
-      fontSize: "0.8rem",
-      position: "absolute",
-      left: 10,
-      top: 13,
-      zIndex: 1
-    };
-  }
-
-  get adornRightStyle(): CSSProperties {
-    return {
-      color: "#777",
-      fontWeight: "bold",
-      fontSize: "0.8rem",
-      position: "absolute",
-      right: 10,
-      top: 13,
-      zIndex: 1
-    };
-  }
-
   public render() {
-    const { config, title } = this.props;
+    const { config, title, width } = this.props;
     const { fields, loading, error } = this.state;
     return (
-      <form onSubmit={this.handleFormSubmit} style={this.formStyle}>
+      <form onSubmit={this.handleFormSubmit} style={{ width }}>
         <h3>{title}</h3>
-        <div style={this.fieldsetStyle}>
+        <div className="flex-form">
           {map(config, (v: OcFieldConfig, k: keyof Partial<OcModel>) => {
+            if (!v) return;
             const key = k as string;
             const value = (fields[k] || "") as string;
-            const inputStyleExtend: CSSProperties = {};
-            const controlStyleExtend: CSSProperties = {};
+            const inputStyle: CSSProperties = {};
+            const controlStyle: CSSProperties = {};
+            if (v.multiline && v.options) {
+              console.error(
+                `OcForm "${title}" > OcFieldConfig.${k} cannot have both "multiline" and "options" properties.`
+              );
+              return;
+            }
+            if (v.type === "tel" && v.options) {
+              console.warn(
+                `OcForm "${title}" > OcFieldConfig.${k} will ignore property "options" when type = "tel".`
+              );
+            }
             if (v.width) {
-              controlStyleExtend["flexBasis"] = `calc(${v.width} - 12px)`;
+              controlStyle["flexBasis"] = `calc(${v.width} - 12px)`;
             }
             if (v.adorn) {
               if (v.adorn.left) {
-                inputStyleExtend["paddingLeft"] = 24;
+                inputStyle["paddingLeft"] = 24;
               }
               if (v.adorn.right) {
-                inputStyleExtend["paddingRight"] = 24;
+                inputStyle["paddingRight"] = 24;
               }
             }
             return (
               <React.Fragment key={key}>
-                <div
-                  className="form-control"
-                  style={{ ...this.controlStyle, ...controlStyleExtend }}
-                >
-                  <label style={this.labelStyle} htmlFor={`${title}_${key}`}>
+                <div className="form-control" style={controlStyle}>
+                  <label htmlFor={`${title}_${key}`}>
                     {v.label || Case.title(key)}
                     {v.required && <span style={{ color: "red" }}> *</span>}
                   </label>
                   {v.multiline ? (
                     <textarea
-                      style={{ ...this.inputStyle, ...this.textAreaStyle }}
                       readOnly={v.readOnly}
                       placeholder={
                         v.placeholder || (v.required ? "" : "Optional")
@@ -292,11 +171,11 @@ class OcForm<OcModel> extends React.Component<
                   ) : (
                     <div style={{ position: "relative" }}>
                       {v.adorn && v.adorn.left && (
-                        <span style={this.adornLeftStyle}>{v.adorn.left}</span>
+                        <span className="adorn-left">{v.adorn.left}</span>
                       )}
                       {v.type === "tel" ? (
                         <PhoneNumberTextMask
-                          style={{ ...this.inputStyle, ...inputStyleExtend }}
+                          style={inputStyle}
                           readOnly={v.readOnly}
                           type={v.type}
                           required={v.required}
@@ -308,9 +187,36 @@ class OcForm<OcModel> extends React.Component<
                           value={value || ""}
                           onChange={this.handleInputChange(k)}
                         />
+                      ) : v.options ? (
+                        <select
+                          style={inputStyle}
+                          required={v.required}
+                          placeholder={
+                            v.placeholder || (v.required ? "" : "Optional")
+                          }
+                          disabled={v.disabled || v.readOnly || loading}
+                          id={`${title}_${key}`}
+                          value={value || ""}
+                          onChange={this.handleInputChange(k)}
+                        >
+                          {v.options.map((o, i) => {
+                            const isObj = typeof o === "object";
+                            return (
+                              <option
+                                key={i}
+                                value={isObj ? (o as OcOptionObject).value : o}
+                              >
+                                {isObj
+                                  ? (o as OcOptionObject).label ||
+                                    (o as OcOptionObject).value
+                                  : o}
+                              </option>
+                            );
+                          })}
+                        </select>
                       ) : (
                         <input
-                          style={{ ...this.inputStyle, ...inputStyleExtend }}
+                          style={inputStyle}
                           readOnly={v.readOnly}
                           type={v.type}
                           min={v.min}
@@ -327,25 +233,20 @@ class OcForm<OcModel> extends React.Component<
                         />
                       )}
                       {v.adorn && v.adorn.right && (
-                        <span style={this.adornRightStyle}>
-                          {v.adorn.right}
-                        </span>
+                        <span className="adorn-right">{v.adorn.right}</span>
                       )}
                     </div>
                   )}
-                  {v.helpText && <p style={this.helpTextStyle}>{v.helpText}</p>}
+                  {v.helpText && <p className="help">{v.helpText}</p>}
                 </div>
                 {v.confirm && (
-                  <div
-                    className="form-control"
-                    style={{ ...this.controlStyle, ...controlStyleExtend }}
-                  >
-                    <label style={this.labelStyle} htmlFor={key}>
+                  <div className="form-control" style={controlStyle}>
+                    <label htmlFor={key}>
                       {`Confirm ${v.label || Case.title(key)}`}
                       {v.required && <span style={{ color: "red" }}> *</span>}
                     </label>
                     <input
-                      style={this.inputStyle}
+                      style={inputStyle}
                       readOnly={v.readOnly}
                       type={v.type}
                       min={v.min}
@@ -360,21 +261,12 @@ class OcForm<OcModel> extends React.Component<
             );
           })}
         </div>
-        <div style={{ ...this.controlStyle, ...this.buttonContainerStyle }}>
-          <button
-            type="submit"
-            style={{ ...this.buttonStyle, ...this.submitStyle }}
-          >
-            Submit
-          </button>
-          <button
-            type="reset"
-            style={{ ...this.buttonStyle }}
-            onClick={this.handleResetClick}
-          >
+        <div className="form-footer">
+          <button type="submit">Submit</button>
+          <button type="reset" onClick={this.handleResetClick}>
             Reset
           </button>
-          {error && <p style={this.errorStyle}>{error}</p>}
+          {error && <p className="error">{error}</p>}
         </div>
       </form>
     );

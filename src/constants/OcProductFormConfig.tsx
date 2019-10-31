@@ -34,7 +34,8 @@ const OC_PRODUCT_FORM_CONFIG: OcFormConfig<Partial<ProductPriceCreate>> = {
     step: "1",
     min: 1,
     helpText: "Lineitem totals will be multiplied by this value",
-    width: "65%"
+    width: "65%",
+    options: [1, 5, 10, 15, 20]
   },
   ShipWeight: {
     width: "25%",

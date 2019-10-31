@@ -18,9 +18,71 @@ code {
     monospace;
 }
 
+form {
+  background-color: rgb(255, 255, 255);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 8px 18px 0px;
+  padding: 1px 16px 16px;
+  margin: 0px auto;
+  border-radius: 8px;
+}
+
+button {
+  flex-grow: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 10px 12px;
+  background: rgb(204, 204, 204);
+  border-style: solid;
+  border-color: rgb(170, 170, 170);
+  border-width: 0px;
+  border-radius: 4px;
+  font-family: roboto;
+  text-transform: uppercase;
+}
+
+button[type="submit"] {
+  margin: 0 0 0 8px;
+  background: teal;
+  color: white;
+  border-color: teal;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin: 2px 2px 4px;
+}
+
+.flex-form {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0px -6px;
+}
+
+select,
 input,
 textarea {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  min-width: 90px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(204, 204, 204);
+  border-radius: 4px;
+  background: rgb(221, 221, 221);
   font-family: inherit
+}
+
+textarea {
+  height: 125px;
+}
+
+.form-control {
+  margin: 0 6px;
+  flex: 0 0 calc(100% - 12px);
 }
 
 .form-control:focus-within label {
@@ -29,4 +91,49 @@ textarea {
 
 .form-control:focus-within input {
   background: #eee !important;
+}
+
+.adorn-right {
+  color: rgb(119, 119, 119);
+  font-weight: bold;
+  font-size: 0.8rem;
+  position: absolute;
+  right: 10px;
+  top: 13px;
+  z-index: 1;
+}
+
+.adorn-left {
+  color: rgb(119, 119, 119);
+  font-weight: bold;
+  font-size: 0.8rem;
+  position: absolute;
+  left: 10px;
+  top: 13px;
+  z-index: 1;
+}
+
+p.error {
+  flex-grow: 1;
+  flex-shrink: 1;
+  color: red;
+  display: inline-block;
+  font-size: 0.8rem;
+  margin: 0 8px 0 0;
+}
+
+p.help {
+  font-size: 0.7rem;
+  color: rgb(136, 136, 136);
+  margin: -4px 2px 10px;
+}
+
+.form-footer {
+  border-top: 1px solid rgb(221, 221, 221);
+  margin: 4px -16px 0px;
+  padding: 12px 16px 0px;
+  display: flex;
+  flex-flow: row-reverse nowrap;
+  align-items: center;
+  flex-basis: 100%;
 }

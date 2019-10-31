@@ -39,7 +39,8 @@ const OC_ADDRESS_FORM_CONFIG: OcFormConfig<Partial<Address>> = {
   State: {
     value: "MN",
     width: "25%",
-    required: true
+    required: true,
+    options: [{ value: "MN" }, { value: "WI" }]
   },
   Zip: {
     width: "35%",
